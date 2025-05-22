@@ -13,7 +13,7 @@ pipeline {
               checkout scm
               }
             }
- }
+
 post {
           always{
               script {
@@ -40,4 +40,5 @@ post {
               }
           }
 	}
+     }
 }
