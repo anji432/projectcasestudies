@@ -14,6 +14,7 @@ IMAGE_NAME = ""
        steps {
          script {
            sh 'ls -ltr'
+           sh 'cd currency-exchange'
            sh 'mvn clean package'
           }      
         }
