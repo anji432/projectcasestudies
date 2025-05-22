@@ -12,6 +12,7 @@ IMAGE_NAME = ""
          //     checkout scm
               }
          }
+        }
       stage ('Build and Test'){
        steps {
          script {
