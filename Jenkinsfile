@@ -1,5 +1,5 @@
 pipeline {
-  agent {any}
+  agent {label 'any'}
   environment {
     def DOCKER_TAG = "CS1-DEVpwww-${BUILD_NUMBER}"
     DOCKER_REGISTRY = "<docker_registry_URL>"
