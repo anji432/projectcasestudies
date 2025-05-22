@@ -1,7 +1,7 @@
 pipeline {
   agent {label 'master'}
   environment {
-    def DOCKER_TAG = "CS1-DEVpwww-${BUILD_NUMBER}"
+    def DOCKER_TAG = "CS1-DEV-${BUILD_NUMBER}"
     DOCKER_REGISTRY = "<docker_registry_URL>"
     DOCKER_REPO = "<docker_repo_name>"
     WEBHOOK_URL = credentials('My_Teams_notification')
