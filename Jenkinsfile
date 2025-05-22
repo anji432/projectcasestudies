@@ -17,12 +17,14 @@ IMAGE_NAME = ""
            sh 'mvn clean package'
           }      
         }
+      }
       stage ('Build and Push Docker image'){
          steps {
          script {
            echo "checking the build "
           //  sh ' docker build -t $IMAGE_NAME .'
        }
+      }
 post {
           always{
               script {
