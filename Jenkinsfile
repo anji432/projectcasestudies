@@ -1,10 +1,7 @@
 pipeline {
   agent {label 'master'}
   environment {
-    def DOCKER_TAG = "CS1-DEV-${BUILD_NUMBER}"
-    DOCKER_REGISTRY = "<docker_registry_URL>"
-    DOCKER_REPO = "<docker_repo_name>"
-    WEBHOOK_URL = credentials('My_Teams_notification')
+IMAGE_NAME = ""
   }
 
     stages {
@@ -12,8 +9,20 @@ pipeline {
             steps{
               checkout scm
               }
-           
-
+         }
+      stage ('Build and Test'){
+       steps {
+         script {
+           sh 'ls -ltr'
+           sh 'mvn clean package'
+          }      
+        }
+      stage ('Build and Push Docker image'){
+         steps {
+         script {
+           echo "checking the build "
+          //  sh ' docker build -t $IMAGE_NAME .'
+       }
 post {
           always{
               script {
