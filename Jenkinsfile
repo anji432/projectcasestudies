@@ -10,10 +10,8 @@ pipeline {
     stages {
       stage ('Checkout'){
             steps{
-              withCredentials([gitUsernamePassword(credentialsId: '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', gitToolName: 'Default')]) {
               checkout scm
               }
             }
  }
-}
 }
