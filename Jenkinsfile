@@ -7,6 +7,8 @@ IMAGE_NAME = ""
     stages {
       stage ('Checkout'){
             steps{
+             script {
+               sh 'echo "skipping checkout as job take care of it"'
          //     checkout scm
               }
          }
@@ -22,7 +24,7 @@ IMAGE_NAME = ""
       stage ('Build and Push Docker image'){
          steps {
          script {
-           echo "checking the build "
+           sh 'echo "checking the build "'
           //  sh ' docker build -t $IMAGE_NAME .'
        }
       }
