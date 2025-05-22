@@ -12,7 +12,7 @@ pipeline {
             steps{
               checkout scm
               }
-            }
+           
 
 post {
           always{
@@ -41,4 +41,5 @@ post {
           }
 	}
      }
+   }
 }
