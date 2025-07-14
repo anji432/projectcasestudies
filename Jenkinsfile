@@ -23,7 +23,7 @@ pipeline {
     stage('Build and Push Docker Image') {
       steps {
         script {
-          sh 'docker build -t $IMAGE_NAME .'
+          sh 'sudo docker build -t $IMAGE_NAME .'
         }
       }
     }
@@ -33,7 +33,7 @@ pipeline {
         withCredentials([usernamePassword(credentialsId: 'Dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           sh '''
             echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-            docker push $IMAGE_NAME
+            sudo docker push $IMAGE_NAME
           '''
         }
       }
