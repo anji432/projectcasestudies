@@ -24,7 +24,7 @@ pipeline {
       steps {
         script {
          // sh 'sudo docker build -t $IMAGE_NAME .'
-          echo " skipped here "
+          echo "success"
         }
       }
     }
