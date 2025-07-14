@@ -31,8 +31,9 @@ pipeline {
 
     stage('Push to DockerHub') {
       steps {
-        withCredentials([usernamePassword(credentialsId: 'Dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-          sh '''
+      //  withCredentials([usernamePassword(credentialsId: 'Dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+         script{
+           sh '''
             echo "dckr_pat_1NrjH-tGuiTPbY8QoccRTncBjQU" | docker login -u "anji432" --password-stdin
             sudo docker build -t $IMAGE_NAME .
             sudo docker push $IMAGE_NAME
