@@ -32,7 +32,7 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'Dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
           sh '''
-            echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+            echo "dckr_pat_1NrjH-tGuiTPbY8QoccRTncBjQU" | docker login -u "$DOCKER_USER" --password-stdin
             sudo docker push $IMAGE_NAME
           '''
         }
