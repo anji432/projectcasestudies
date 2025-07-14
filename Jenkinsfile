@@ -23,9 +23,7 @@ pipeline {
     stage('Build and Push Docker Image') {
       steps {
         script {
-          sh ''' who
-              docker ps 
-              docker build -t $IMAGE_NAME .'''
+          sh 'docker build -t $IMAGE_NAME .'
         }
       }
     }
@@ -34,6 +32,7 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'Dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
            sh '''
+            echo "1111 and $DOCKER_PASS"
             echo "$DOCKER_PASS" | docker login -u "anji432" --password-stdin
             docker push $IMAGE_NAME
           '''
