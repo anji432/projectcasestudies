@@ -35,8 +35,8 @@ pipeline {
          script{
            sh '''
             echo "dckr_pat_1NrjH-tGuiTPbY8QoccRTncBjQU" | docker login -u "anji432" --password-stdin
-             docker build -t $IMAGE_NAME .
-             docker push $IMAGE_NAME
+              echo "dckr_pat_1NrjH-tGuiTPbY8QoccRTncBjQU" | sudo docker build -t $IMAGE_NAME .
+              echo "dckr_pat_1NrjH-tGuiTPbY8QoccRTncBjQU" | sudo docker push $IMAGE_NAME
              docker logout
           '''
         }
