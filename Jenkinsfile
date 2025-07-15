@@ -57,22 +57,23 @@ pipeline {
 
     stage('Deploy to Dev') {
       steps {
-       withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'veera-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'k8_secret_token', namespace: '', serverUrl: 'https://7E5A221BDABEC23E3E1C11D40BFDF608.gr7.ap-south-1.eks.amazonaws.com']]) {
-	  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
+          withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'veera-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'k8_secret_token', namespace: '', serverUrl: 'https://7E5A221BDABEC23E3E1C11D40BFDF608.gr7.ap-south-1.eks.amazonaws.com']]) {
+		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
           sh 'chmod u+x ./kubectl'  
-          sh './kubectl get nodes'
+          sh './kubectl apply -f ${MANIFEST_PATH}/dev/deployment.yaml --namespace=dev'
+		  sh './kubectl rollout status deployment/spring-boot-app --namespace=dev'
+            }
         }
-      }
     }
 
     stage('Deploy to Test') {
       steps {
-        script {
-          sh '''
-            kubectl apply -f ${MANIFEST_PATH}/test/deployment.yaml --namespace=test
-            kubectl rollout status deployment/spring-boot-app --namespace=test
-          '''
-        }
+        withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'veera-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'k8_secret_token', namespace: '', serverUrl: 'https://7E5A221BDABEC23E3E1C11D40BFDF608.gr7.ap-south-1.eks.amazonaws.com']]) {
+		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
+          sh 'chmod u+x ./kubectl'  
+          sh './kubectl apply -f ${MANIFEST_PATH}/test/deployment.yaml --namespace=test'
+		  sh './kubectl rollout status deployment/spring-boot-app --namespace=test'
+            }
       }
     }
 
@@ -91,12 +92,12 @@ pipeline {
         expression { return params.Proceed == true }
       }
       steps {
-        script {
-          sh '''
-            kubectl apply -f ${MANIFEST_PATH}/prod/deployment.yaml --namespace=prod
-            kubectl rollout status deployment/spring-boot-app --namespace=prod
-          '''
-        }
+       withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'veera-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'k8_secret_token', namespace: '', serverUrl: 'https://7E5A221BDABEC23E3E1C11D40BFDF608.gr7.ap-south-1.eks.amazonaws.com']]) {
+		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
+          sh 'chmod u+x ./kubectl'  
+          sh './kubectl apply -f ${MANIFEST_PATH}/prod/deployment.yaml --namespace=prod'
+		  sh './kubectl rollout status deployment/spring-boot-app --namespace=prod'
+            }
       }
     }
   }
