@@ -32,7 +32,6 @@ pipeline {
       steps {
         withCredentials([usernamePassword(credentialsId: 'DockerHub-Credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
            sh '''
-            echo "1111 and $DOCKER_PASS"
             echo "$DOCKER_PASS" | docker login -u "anji432" --password-stdin
             docker push $IMAGE_NAME
           '''
@@ -71,6 +70,7 @@ pipeline {
         withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'veera-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'k8_secret_token', namespace: '', serverUrl: 'https://7E5A221BDABEC23E3E1C11D40BFDF608.gr7.ap-south-1.eks.amazonaws.com']]) {
 		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
           sh 'chmod u+x ./kubectl'  
+	  sh 'kubectl delete deployment spring-boot-app --namespace=test'
           sh './kubectl apply -f ${MANIFEST_PATH}/test/deployment.yaml --namespace=test'
 		sh './kubectl apply -f ${MANIFEST_PATH}/test/service.yaml --namespace=test'
 		  sh './kubectl rollout status deployment/spring-boot-app --namespace=test'
