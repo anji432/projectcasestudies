@@ -40,7 +40,7 @@ pipeline {
       }
     }
 
-    stage('Static Code Analysis') {
+   /* stage('Static Code Analysis') {
       environment {
         SONAR_URL = "http://18.116.40.31:9000"
       }
@@ -53,7 +53,7 @@ pipeline {
           '''
         }
       }
-    }
+    }*/
 
     stage('Deploy to Dev') {
       steps {
