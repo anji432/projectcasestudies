@@ -88,9 +88,6 @@ pipeline {
     }
 
     stage('Deploy to Prod') {
-      when {
-        expression { return params.Proceed == Proceed }
-      }
       steps {
        withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'veera-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'k8_secret_token', namespace: '', serverUrl: 'https://7E5A221BDABEC23E3E1C11D40BFDF608.gr7.ap-south-1.eks.amazonaws.com']]) {
 		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
