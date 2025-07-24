@@ -87,6 +87,8 @@ pipeline {
           sh 'chmod u+x ./kubectl' 
            
           sh './kubectl apply -f ${MANIFEST_PATH}/dev/deployment.yaml'
+          sh './kubectl apply -f ${MANIFEST_PATH}/dev/service.yaml'
+
 		  sh './kubectl rollout status deployment/spring-boot-app'
             }
           }
@@ -97,7 +99,9 @@ pipeline {
 		  
 		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
           sh 'chmod u+x ./kubectl'  
-          sh './kubectl apply -f ${MANIFEST_PATH}/dev/deployment.yaml'
+          sh './kubectl apply -f ${MANIFEST_PATH}/test/deployment.yaml'
+          sh './kubectl apply -f ${MANIFEST_PATH}/test/service.yaml'
+
 		  sh './kubectl rollout status deployment/spring-boot-app'
             }
          }
@@ -111,7 +115,9 @@ pipeline {
 		  
 		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
           sh 'chmod u+x ./kubectl'  
-          sh './kubectl apply -f ${MANIFEST_PATH}/dev/deployment.yaml'
+          sh './kubectl apply -f ${MANIFEST_PATH}/prod/deployment.yaml'
+          sh './kubectl apply -f ${MANIFEST_PATH}/prod/service.yaml'
+
 		  sh './kubectl rollout status deployment/spring-boot-app'
           }
          }
