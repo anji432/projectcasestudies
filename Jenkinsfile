@@ -82,11 +82,10 @@ pipeline {
          if (params.ENV == 'dev') {
           echo "Deploying to Dev Environment"     
          
-           withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'dev-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'K8s_Dev_Secret_Key', namespace: '', serverUrl: 'https://190A27BF376DECEE94061DBE6DB92B60.sk1.ap-south-1.eks.amazonaws.com']]) {
-		      
+           withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'dev-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'K8s_Dev_Secret_Key', namespace: '', serverUrl: 'https://190A27BF376DECEE94061DBE6DB92B60.sk1.ap-south-1.eks.amazonaws.com']]) {    
 		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
           sh 'chmod u+x ./kubectl' 
-          sh 'aws eks update-kubeconfig --name ${params.ENV}-cluster --region ${AWS_DEFAULT_REGION}' 
+           
           sh './kubectl apply -f ${MANIFEST_PATH}/dev/deployment.yaml'
 		  sh './kubectl rollout status deployment/spring-boot-app'
             }
@@ -97,8 +96,7 @@ pipeline {
 		   withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'qa-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'K8s_QA_Cluster_Secret', namespace: '', serverUrl: 'https://C150E3ABDE51CBA387351A5BC2C2FA3A.gr7.ap-south-1.eks.amazonaws.com']]) {
 		  
 		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
-          sh 'chmod u+x ./kubectl' 
-          sh 'aws eks update-kubeconfig --name ${params.ENV}-cluster --region ${AWS_DEFAULT_REGION}' 
+          sh 'chmod u+x ./kubectl'  
           sh './kubectl apply -f ${MANIFEST_PATH}/dev/deployment.yaml'
 		  sh './kubectl rollout status deployment/spring-boot-app'
             }
@@ -112,8 +110,7 @@ pipeline {
 		   withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'prod-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'K8s_prod-cluster_Secret', namespace: '', serverUrl: 'https://A8DFDB229FE429F8993453C7BAFFEC89.gr7.ap-south-1.eks.amazonaws.com']]) {
 		  
 		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
-          sh 'chmod u+x ./kubectl' 
-          sh 'aws eks update-kubeconfig --name ${params.ENV}-cluster --region ${AWS_DEFAULT_REGION}' 
+          sh 'chmod u+x ./kubectl'  
           sh './kubectl apply -f ${MANIFEST_PATH}/dev/deployment.yaml'
 		  sh './kubectl rollout status deployment/spring-boot-app'
           }
