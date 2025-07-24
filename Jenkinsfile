@@ -3,11 +3,13 @@ pipeline {
   agent any
   parameters {
     choice(name: 'ENV', choices: [ 'dev', 'qa', 'prod'], description: 'Target enviornment')
+   }
   environment {
     IMAGE_NAME = "anji432/veerarepo:latest"
     MANIFEST_PATH = "manifest_file/k8s"
     AWS_DEFAULT_REGION = "ap-south-1"
   }
+  
 
   stages {
     stage('Checkout') {
