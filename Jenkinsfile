@@ -1,9 +1,12 @@
 
 pipeline {
   agent any
+  parameters {
+    choice(name: 'ENV', choices: [ 'dev', 'qa', 'prod'], description: 'Target enviornment')
   environment {
     IMAGE_NAME = "anji432/veerarepo:latest"
     MANIFEST_PATH = "manifest_file/k8s"
+    AWS_DEFAULT_REGION = "ap-south-1"
   }
 
   stages {
@@ -12,6 +15,14 @@ pipeline {
         git branch: 'main', url: 'https://github.com/anji432/projectcasestudies.git'
       }
     }
+   stage ('Info') {
+     steps {
+       echo "ENV = ${params.ENV}"
+       echo "IMAGE_NAME = ${params.IMAGE_NAME}"
+       echo "MANIFEST_PATH = ${params.MANIFEST_PATH}"
+       echo "AWS_DEFAULT_REGION = ${params.AWS_DEFAULT_REGION}"
+     }
+   }
 
     stage('Build and Test') {
       steps {
@@ -71,10 +82,14 @@ pipeline {
     }
 
     stage('Deploy to Dev') {
+      when {
+         expresession { return params.ENV == 'dev' }
+     }
       steps {
           withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'veera-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'k8_secret_token', namespace: '', serverUrl: 'https://7E5A221BDABEC23E3E1C11D40BFDF608.gr7.ap-south-1.eks.amazonaws.com']]) {
 		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
-          sh 'chmod u+x ./kubectl'  
+          sh 'chmod u+x ./kubectl' 
+          sh 'aws eks update-kubeconfig --name ${params.ENV}-cluster --region ${AWS_DEFAULT_REGION}' 
           sh './kubectl apply -f ${MANIFEST_PATH}/dev/deployment.yaml --namespace=dev'
 		  sh './kubectl rollout status deployment/spring-boot-app --namespace=dev'
             }
@@ -82,10 +97,16 @@ pipeline {
     }
 
     stage('Deploy to Test') {
+ 
+       when {
+         expresession { return params.ENV == 'qa' }
+     }
+
       steps {
         withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'veera-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'k8_secret_token', namespace: '', serverUrl: 'https://7E5A221BDABEC23E3E1C11D40BFDF608.gr7.ap-south-1.eks.amazonaws.com']]) {
 		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
-          sh 'chmod u+x ./kubectl'  
+          sh 'chmod u+x ./kubectl' 
+          sh 'aws eks update-kubeconfig --name ${params.ENV}-cluster --region ${AWS_DEFAULT_REGION}'
           sh './kubectl apply -f ${MANIFEST_PATH}/test/deployment.yaml --namespace=test'
 		sh './kubectl apply -f ${MANIFEST_PATH}/test/service.yaml --namespace=test'
 		  sh './kubectl rollout status deployment/spring-boot-app --namespace=test'
@@ -94,6 +115,9 @@ pipeline {
     }
 
     stage('Approval to Deploy to Prod') {
+       when {
+         expresession { return params.ENV == 'prod' }
+     }
       steps {
         script {
           input message: "Approve deployment to Prod?", parameters: [
@@ -104,12 +128,16 @@ pipeline {
     }
 
     stage('Deploy to Prod') {
+       when {
+         expresession { return params.ENV == 'prod' }
+     }
       steps {
        withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'veera-cluster.ap-south-1.eksctl.io', contextName: '', credentialsId: 'k8_secret_token', namespace: '', serverUrl: 'https://7E5A221BDABEC23E3E1C11D40BFDF608.gr7.ap-south-1.eks.amazonaws.com']]) {
 		  sh 'curl -LO "https://storage.googleapis.com/kubernetes-release/release/v1.20.5/bin/linux/amd64/kubectl"'  
           sh 'chmod u+x ./kubectl'  
-          sh './kubectl apply -f ${MANIFEST_PATH}/prod/deployment.yaml --namespace=prod'
-		  sh './kubectl rollout status deployment/spring-boot-app --namespace=prod'
+          sh 'aws eks update-kubeconfig --name ${params.ENV}-cluster --region ${AWS_DEFAULT_REGION}' 
+          sh './kubectl apply -f ${MANIFEST_PATH}/prod/deployment.yaml'
+		  sh './kubectl rollout status deployment/spring-boot-app'
             }
       }
     }
