@@ -1,0 +1,93 @@
+To deploy to multiple EKS clusters from Jenkins, your pipeline needs kubeconfig access for each environment (dev, qa, prod). Below is how you can handle kubeconfig setup and usage per cluster.
+
+✅ Option 1: Use aws eks update-kubeconfig (Recommended)
+If Jenkins has IAM access to your EKS clusters, you can dynamically generate the kubeconfig at runtime:
+
+🔧 Prerequisites:
+Jenkins agent must:
+
+Have AWS CLI installed
+
+Have IAM permissions to call eks:DescribeCluster
+
+Be able to assume roles (if needed) for each cluster
+
+🧪 Command (per cluster):
+bash
+Copy
+Edit
+aws eks --region <region> update-kubeconfig --name <cluster-name>
+This updates ~/.kube/config with the selected cluster context.
+
+🧱 Jenkinsfile Snippet (Dev Example):
+groovy
+Copy
+Edit
+stage('Deploy to Dev') {
+  steps {
+    script {
+      sh '''
+      aws eks --region us-west-2 update-kubeconfig --name eks-dev
+      kubectl config use-context arn:aws:eks:us-west-2:123456789012:cluster/eks-dev
+      kubectl get nodes
+      '''
+    }
+  }
+}
+Repeat with eks-qa, eks-prod for other stages.
+
+✅ Option 2: Use Static kubeconfig Files (Stored in Jenkins Credentials)
+If your Jenkins agent cannot use AWS CLI or IAM roles, you can:
+
+Generate the kubeconfig manually for each cluster:
+
+bash
+Copy
+Edit
+aws eks update-kubeconfig --name eks-dev --region us-west-2 --kubeconfig eks-dev-kubeconfig
+aws eks update-kubeconfig --name eks-qa --region us-west-2 --kubeconfig eks-qa-kubeconfig
+aws eks update-kubeconfig --name eks-prod --region us-west-2 --kubeconfig eks-prod-kubeconfig
+Save each file in Jenkins:
+
+Go to Jenkins → Manage Jenkins → Credentials
+
+Add each file as a "Secret file" credential
+
+Reference them in your pipeline:
+
+groovy
+Copy
+Edit
+stage('Deploy to Dev') {
+  steps {
+    withCredentials([file(credentialsId: 'kubeconfig-dev', variable: 'KUBECONFIG')]) {
+      sh '''
+        export KUBECONFIG=$KUBECONFIG
+        kubectl config use-context eks-dev
+        kubectl get pods
+      '''
+    }
+  }
+}
+✅ Option 3: Use Separate Contexts in a Single Kubeconfig
+You can merge all EKS contexts into a single kubeconfig file and switch context dynamically:
+
+bash
+Copy
+Edit
+kubectl config use-context eks-dev
+kubectl config use-context eks-qa
+And in Jenkins:
+
+groovy
+Copy
+Edit
+sh 'kubectl config use-context eks-qa'
+🎯 Best Practices
+Practice	Why
+Use aws eks update-kubeconfig	Dynamic, secure, IAM-based access
+Separate kubeconfigs per cluster	More secure and manageable
+Store credentials in Jenkins	Avoid hardcoded sensitive data
+Use namespaces in same cluster (optional)	If using single EKS cluster for all envs
+
+Would you like a Terraform snippet to provision IAM roles and attach necessary permissions for Jenkins to acc
