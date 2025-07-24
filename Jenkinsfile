@@ -134,6 +134,7 @@ pipeline {
       }
     }
   }
+}
 post {
     success {
       echo 'Deployment successful!'
@@ -149,5 +150,4 @@ post {
            body: "Oops! Jenkins job '${env.JOB_NAME}' (build #${env.BUILD_NUMBER}) failed.\n\nCheck details: ${env.BUILD_URL}"
     }
   }
- }
 }
