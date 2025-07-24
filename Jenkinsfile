@@ -20,10 +20,7 @@ pipeline {
    stage ('Info') {
      steps {
        echo "ENV = ${params.ENV}"
-       echo "IMAGE_NAME = ${params.IMAGE_NAME}"
-       echo "MANIFEST_PATH = ${params.MANIFEST_PATH}"
-       echo "AWS_DEFAULT_REGION = ${params.AWS_DEFAULT_REGION}"
-     }
+       }
    }
 
     stage('Build and Test') {
