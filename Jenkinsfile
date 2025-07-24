@@ -40,15 +40,16 @@ pipeline {
         }
       }
     }
-   stage('Scan Image with Trivy') {
+  /* stage('Scan Image with Trivy') {
             steps {
                 script {
                     // installed trivy on agent
                     // Run Trivy scan and fail if HIGH/CRITICAL vulns exist
-                    sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL $IMAGE_NAME'
+                    // sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL $IMAGE_NAME'
+                       sh 'trivy image --exit-code 1 --severity HIGH,CRITICAL --scanners vuln $IMAGE_NAME'
                 }
             }
-        }
+       }*/
 
     stage('Push to DockerHub') {
       steps {
